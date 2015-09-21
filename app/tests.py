@@ -58,7 +58,7 @@ class ThingApi(GabbiHypothesisTestCase):
                     'name': 'fetch thing',
                     'url': '/app/api/things/$RESPONSE["$.id"]/',
                     'response_json_paths': {
-                        '$.name': name
+                        '$.name': name.strip()
                     }
                 },
             ]
