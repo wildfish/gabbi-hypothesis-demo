@@ -4,7 +4,7 @@ from django.test import LiveServerTestCase
 from gabbi.driver import test_suite_from_yaml, RESPONSE_HANDLERS
 from gabbi.case import HTTPTestCase
 from gabbi.reporter import ConciseTestRunner
-from hypothesis import given, assume
+from hypothesis import given, assume, example
 from hypothesis.extra.django import TestCase
 from hypothesis.strategies import text
 from six import StringIO
@@ -38,9 +38,9 @@ class GabbiHypothesisTestCase(TestCase, LiveServerTestCase):
 class ThingApi(GabbiHypothesisTestCase):
     @given(text())
     def test_object_is_created___object_has_correct_name_when_fetched(self, name):
-        assume(name.strip())
+        assume(name.strip() and len(name) < 255)
         self.run_gabi(
-            'test_object_is_created___object_has_correct_name_when_fetched',
+            'object_is_created___object_has_correct_name_when_fetched',
             [
                 {
                     'name': 'create thing',
@@ -67,7 +67,7 @@ class ThingApi(GabbiHypothesisTestCase):
     @given(text().filter(lambda x: not x.strip()))
     def test_object_name_is_blank___bad_request_status_is_given(self, name):
         self.run_gabi(
-            'test_object_is_created___object_has_correct_name_when_fetched',
+            'object_name_is_blank___bad_request_status_is_given',
             [
                 {
                     'name': 'create thing',
@@ -82,6 +82,30 @@ class ThingApi(GabbiHypothesisTestCase):
                     },
                     'response_json_paths': {
                         '$.name': ['This field may not be blank.']
+                    }
+                },
+            ]
+        )
+
+    @given(text(min_size=256))
+    def test_object_name_too_long___bad_request_status_is_given(self, name):
+        assume(len(name.strip()) > 255)
+        self.run_gabi(
+            'object_name_too_long___bad_request_status_is_given',
+            [
+                {
+                    'name': 'create thing',
+                    'url': '/app/api/things/',
+                    'method': 'POST',
+                    'status': 400,
+                    'request_headers': {
+                        'content-type': 'application/json',
+                    },
+                    'data': {
+                        'name': name
+                    },
+                    'response_json_paths': {
+                        '$.name': ['Ensure this field has no more than 255 characters.']
                     }
                 },
             ]
