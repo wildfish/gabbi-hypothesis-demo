@@ -38,6 +38,7 @@ class GabbiHypothesisTestCase(TestCase, LiveServerTestCase):
 class ThingApi(GabbiHypothesisTestCase):
     @given(text())
     def test_object_is_created___object_has_correct_name_when_fetched(self, name):
+        assume(name)
         self.run_gabi(
             'test_object_is_created___object_has_correct_name_when_fetched',
             [
@@ -58,6 +59,28 @@ class ThingApi(GabbiHypothesisTestCase):
                     'url': '/app/api/things/$RESPONSE["$.id"]/',
                     'response_json_paths': {
                         '$.name': name
+                    }
+                },
+            ]
+        )
+
+    def test_object_name_is_blank___bad_request_status_is_given(self):
+        self.run_gabi(
+            'test_object_is_created___object_has_correct_name_when_fetched',
+            [
+                {
+                    'name': 'create thing',
+                    'url': '/app/api/things/',
+                    'method': 'POST',
+                    'status': 400,
+                    'request_headers': {
+                        'content-type': 'application/json',
+                    },
+                    'data': {
+                        'name': ''
+                    },
+                    'response_json_paths': {
+                        '$.name': ['This field may not be blank.']
                     }
                 },
             ]
