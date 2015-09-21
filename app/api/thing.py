@@ -6,7 +6,7 @@ from app.models import Thing
 class ThingSerializer(ModelSerializer):
     class Meta:
         model = Thing
-        fields = ('name', )
+        fields = ('id', 'name', )
 
 
 class ThingViewSet(ModelViewSet):
