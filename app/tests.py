@@ -4,7 +4,7 @@ from django.test import LiveServerTestCase
 from gabbi.driver import test_suite_from_yaml, RESPONSE_HANDLERS
 from gabbi.case import HTTPTestCase
 from gabbi.reporter import ConciseTestRunner
-from hypothesis import given, assume, example
+from hypothesis import given, assume
 from hypothesis.extra.django import TestCase
 from hypothesis.strategies import text
 from six import StringIO
