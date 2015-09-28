@@ -123,7 +123,7 @@ we are actually testing the API in a way it will be used by the consumers or whe
 world. Remember, we need to be nasty to our applications in order to test them correctly. Of cource we can enforce all
 of this in our testing framework but often this makes the test a lot harder to read.
 
-Gabbi is a tool for declaratively creating tests for web APIs. It hopes to solve these problems. To do this gabbi uses
+Gabbi is a tool for declaratively creating tests for web APIs. It hopes to solve these problems. To do this Gabbi uses
 yaml files to declare the test API calls and the expected response which can be ran using `gabbi-run`. For example,
 lets take a look at a simple web service which has a database of `Thing`s. To test the creation of a thing we may have
 something like:
@@ -152,7 +152,7 @@ In this example `$.name` is used to reference the `name` property from the respo
 lookup notation, for more information take a look at the (jsonpath_re)[http://jsonpath-rw.readthedocs.org/en/latest/] 
 docs pages.
 
-Full gabbi documentation can be found [here](https://gabbi.readthedocs.org/en/latest/index.html).
+Full Gabbi documentation can be found [here](https://gabbi.readthedocs.org/en/latest/index.html).
 
 Combining The Two
 =================
@@ -214,8 +214,8 @@ class GabbiHypothesisTestCase(TestCase, LiveServerTestCase):
 
 First thing to note, our test case inherits from the django `TestCase` supplied by hypothesis as well as the 
 `LiveServerTestCase` which will handle the database between hypothesis runs as well as creating the server to test 
-against. Next we initialise the gabbi request handlers. Third we build the gabbi test suite from the declaration and
-finally run the tests reporting any errors so that hypothesis can try and find a simpler error case.
+against. Next we initialise the Gabbi request handlers. Third we build the Gabbi test suite from the declaration and
+finally run the tests reporting any errors so that Hypothesis can try and find a simpler error case.
 
 Building Tests
 --------------
@@ -253,7 +253,7 @@ class ThingApi(GabbiHypothesisTestCase):
         })
 ```
 
-This is exactly the same test as above except we are taking the name for our object from hypothesis. When we run the
+This is exactly the same test as above except we are taking the name for our object from Hypothesis. When we run the
 test we get the following output:
 
 ```
@@ -420,7 +420,7 @@ safe in the knowledge our users using the old API will not have their applicatio
 Conclusion
 ==========
 
-We have seen how to combine hypothesis and gabbi to create tests for our API that are both readable and have high 
+We have seen how to combine Hypothesis and Gabbi to create tests for our API that are both readable and have high 
 coverage by delegating the value selection. We have also seen how using these methods we can check and improve the 
 assumptions we have made about our API. Finally, property based tesing can be used to help keep test faith for older
 versions of you API.
