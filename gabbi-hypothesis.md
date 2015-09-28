@@ -222,22 +222,7 @@ $ python manage.py test
 Creating test database for alias 'default'...
 Falsifying example: test_object_is_created___object_has_correct_name_when_fetched(self=<app.tests.ThingApi testMethod=test_object_is_created___object_has_correct_name_when_fetched>, name='')
 F
-======================================================================
-FAIL: test_object_is_created___object_has_correct_name_when_fetched (app.tests.ThingApi)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/home/dan/workspace/wildfish/gabbihypothesisdemo/.hypothesis/eval_source/hypothesis_temporary_module_9669614f5505be38bfcae5a44a1d6cfa08e2c416.py", line 5, in test_object_is_created___object_has_correct_name_when_fetched
-    return f(self, name)
-  File "/home/dan/workspace/wildfish/pyenvs/gabbihypothesisdemo/lib/python3.4/site-packages/hypothesis/core.py", line 575, in wrapped_test
-    print_example=True
-  File "/home/dan/workspace/wildfish/pyenvs/gabbihypothesisdemo/lib/python3.4/site-packages/hypothesis/executors/executors.py", line 36, in execute
-    return function()
-  File "/home/dan/workspace/wildfish/pyenvs/gabbihypothesisdemo/lib/python3.4/site-packages/hypothesis/core.py", line 367, in run
-    return test(*args, **kwargs)
-  File "/home/dan/workspace/wildfish/gabbihypothesisdemo/app/tests.py", line 26, in test_object_is_created___object_has_correct_name_when_fetched
-    '$.name': name
-  File "/home/dan/workspace/wildfish/gabbihypothesisdemo/app/test_case.py", line 42, in run_gabi
-    self.fail(s.getvalue())
+...
 AssertionError: FAIL: create thing
 	'400' not found in ['201'], response:\r{\r  "name": [\r    "This field may not be blank."\r  ]\r}
 FAIL: fetch thing
@@ -313,22 +298,7 @@ $ python manage.py test
 Creating test database for alias 'default'...
 Falsifying example: test_object_is_created___object_has_correct_name_when_fetched(self=<app.tests.ThingApi testMethod=test_object_is_created___object_has_correct_name_when_fetched>, name='0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000')
 F.
-======================================================================
-FAIL: test_object_is_created___object_has_correct_name_when_fetched (app.tests.ThingApi)
-----------------------------------------------------------------------
-Traceback (most recent call last):
-  File "/home/dan/workspace/wildfish/gabbi-hypothesis-demo/.hypothesis/eval_source/hypothesis_temporary_module_9669614f5505be38bfcae5a44a1d6cfa08e2c416.py", line 5, in test_object_is_created___object_has_correct_name_when_fetched
-    return f(self, name)
-  File "/home/dan/workspace/wildfish/pyenvs/gabbi-hypothesis/lib/python3.4/site-packages/hypothesis/core.py", line 577, in wrapped_test
-    print_example=True
-  File "/home/dan/workspace/wildfish/pyenvs/gabbi-hypothesis/lib/python3.4/site-packages/hypothesis/executors/executors.py", line 36, in execute
-    return function()
-  File "/home/dan/workspace/wildfish/pyenvs/gabbi-hypothesis/lib/python3.4/site-packages/hypothesis/core.py", line 369, in run
-    return test(*args, **kwargs)
-  File "/home/dan/workspace/wildfish/gabbi-hypothesis-demo/app/tests.py", line 29, in test_object_is_created___object_has_correct_name_when_fetched
-    '$.name': name.strip()
-  File "/home/dan/workspace/wildfish/gabbi-hypothesis-demo/app/test_case.py", line 42, in run_gabi
-    self.fail(s.getvalue())
+...
 AssertionError: FAIL: create thing
 	'400' not found in ['201'], response:\r{\r  "name": [\r    "Ensure this field has no more than 255 characters."\r  ]\r}
 FAIL: fetch thing
