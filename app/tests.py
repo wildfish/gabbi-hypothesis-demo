@@ -6,7 +6,7 @@ from .test_case import GabbiHypothesisTestCase
 class ThingApi(GabbiHypothesisTestCase):
     @given(text())
     def test_object_is_created___object_has_correct_name_when_fetched(self, name):
-        assume(name.strip() and len(name) < 255)
+        assume(name.strip() and len(name.strip()) < 255)
 
         self.run_gabi({
             'tests': [{
