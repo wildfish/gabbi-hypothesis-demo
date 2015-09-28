@@ -11,7 +11,7 @@ from six import StringIO
 
 
 class GabbiHypothesisTestCase(TestCase, LiveServerTestCase):
-    def run_gabi(self, tests):
+    def run_gabi(self, gabbi_declaration):
         for handler in RESPONSE_HANDLERS:
             handler(HTTPTestCase)
 
@@ -20,7 +20,7 @@ class GabbiHypothesisTestCase(TestCase, LiveServerTestCase):
         suite = test_suite_from_yaml(
             unittest.defaultTestLoader,
             self.id(),
-            {'tests': tests},
+            gabbi_declaration,
             '.',
             host,
             None,
@@ -40,8 +40,8 @@ class ThingApi(GabbiHypothesisTestCase):
     def test_object_is_created___object_has_correct_name_when_fetched(self, name):
         assume(name.strip() and len(name) < 255)
 
-        self.run_gabi([
-            {
+        self.run_gabi({
+            'tests': [{
                 'name': 'create thing',
                 'url': '/app/api/things/',
                 'method': 'POST',
@@ -59,13 +59,13 @@ class ThingApi(GabbiHypothesisTestCase):
                 'response_json_paths': {
                     '$.name': name.strip()
                 }
-            },
-        ])
+            }],
+        })
 
     @given(text().filter(lambda x: not x.strip()))
     def test_object_name_is_blank___bad_request_status_is_given(self, name):
-        self.run_gabi([
-            {
+        self.run_gabi({
+            'tests': [{
                 'name': 'create thing',
                 'url': '/app/api/things/',
                 'method': 'POST',
@@ -79,15 +79,15 @@ class ThingApi(GabbiHypothesisTestCase):
                 'response_json_paths': {
                     '$.name': ['This field may not be blank.']
                 }
-            },
-        ])
+            }],
+        })
 
     @given(text(min_size=256))
     def test_object_name_too_long___bad_request_status_is_given(self, name):
         assume(len(name.strip()) > 255)
 
-        self.run_gabi([
-            {
+        self.run_gabi({
+            'tests': [{
                 'name': 'create thing',
                 'url': '/app/api/things/',
                 'method': 'POST',
@@ -101,5 +101,5 @@ class ThingApi(GabbiHypothesisTestCase):
                 'response_json_paths': {
                     '$.name': ['Ensure this field has no more than 255 characters.']
                 }
-            },
-        ])
+            }],
+        })
