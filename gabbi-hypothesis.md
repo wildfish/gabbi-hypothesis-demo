@@ -1,7 +1,7 @@
-Using Gabbi and Hypothesis to Test Apis
+Using Gabbi and Hypothesis to Test APIs
 =======================================
 
-In he world of testing it is important to write tests that are both easy to read and covering awide range of scenarios. 
+In he world of testing it is important to write tests that are both easy to read and covering a wide range of scenarios. 
 Often one of these will be sacrificed to facilitate the other, such as hard coding your examples so that your test 
 logic remains clear or by creating an overly complicated setup so that multiple scenarios can be explored. Here we 
 discuss two tools that when combined will allow you to explore more of the test surface of your web API while still 
@@ -10,10 +10,10 @@ creating clear and maintainable tests.
 Hypothesis
 ==========
 
-Hypothesis is a library that, when provided with a description of the parameters of your api will explore many 
-situation that will stress your system allowing you to explore your api more thoroughly than a developer creating hard 
-coded examples. When you have errors, hypothesis will then work to simplify the failing example to show you the 
-simplest failing case and then keep this failing case in it's database to use until the problem is resolved.
+Hypothesis is a library that, when provided with a description of the parameters of your API will explore many 
+situation that will stress your system allowing you to explore your API more thoroughly. When you have errors,
+hypothesis will then work to simplify the failing example to show you the simplest failing case and then keep
+this failing case in it's database to use until the problem is resolved.
 
 Hypothesis uses, what it calls strategies to inject parameters into your test cases. These strategies produce random 
 values from across the variable space including 'nasty' values such as min, max, nan and inf. In general this is done 
@@ -32,7 +32,7 @@ def test_float_addition_is_commutative(first, second):
 ```
 
 In general we want to test properties of our methods using hypothesis to avoid replicating the implementation in the 
-test itself, this will help keep tests clear and independent of the implementation. For example I would probably not 
+test itself, this will help keep tests clear and independent of the implementation. For example we would probably not 
 want to test:
  
 ```python
@@ -42,8 +42,8 @@ def test_result_is_sum_of_first_and_second(first, second):
 ```
 
 While it would be ok to write this test as it is sufficiently simple, for more complex examples such as encoding and 
-decoding data you would likely not want to test the encoded result, instead you would test that given a value, encoding 
-and decoding gives the original result:
+decoding data you would likely not want to test the encoded result, instead you would test that given a value,
+encoding and decoding gives the original result:
    
 ```python
 @given(floats())
@@ -53,7 +53,8 @@ def test_encoding_and_decoding_a_value_gives_the_original_value(value):
 ```
 
 Testing like this gives us two major advantages:
-1. The test is very clear and concise helping doccument the code
+
+1. The test is very clear and concise helping document the code
 2. We are testing the behaviour we are actually interested in. Generally we are not interested in the encoded value, 
 just that when we decode an encoded value we get the original value.
  
@@ -63,23 +64,24 @@ documentation for hypothesis can be found [here](https://hypothesis.readthedocs.
 Gabbi
 =====
 
-Often when testing apis we fall into the trap of testing that in a given situation the api call will be successful or 
+Often when testing APIs we fall into the trap of testing that in a given situation the API call will be successful or 
 error and let the test framework hide all the nasty details from us. While this is usually ok for your the javascript 
 application, where we will either display the data on success or give some kind of error on failure, in the more 
-general case http offers a lot of information to your api consumer, which we should make sure is present and correct if 
-we want our apis to be used by a wider audience.
+general case http offers a lot of information to your API consumer, which we should make sure is present and correct 
+if we want our APIs to be used by a wider audience.
 
 It is also easy to hide away request construction in the test framework. By doing this it is difficult to know whether
-we are actually testing the api in a way it will be used by the consumers or whether we are just hiding in some ideal
+we are actually testing the API in a way it will be used by the consumers or whether we are just hiding in some ideal
 world. Remember, we need to be nasty to our applications in order to test them correctly. Of cource we can enforce all
 of this in our testing framework but often this makes the test a lot harder to read.
 
-Gabbi is a tool for declaratively creating tests for web apis. It hopes to solve 2 problems:
-1. Making api tests easier to read
+Gabbi is a tool for declaratively creating tests for web APIs. It hopes to solve 2 problems:
+
+1. Making aPI tests easier to read
 2. Making testing of http requests more explicit
 
-To do this gabbi uses yaml to declare the test api calls and the expected response. For example, lets take a look at a 
-simple web service which has a database of `Thing`s, to test the creation of a thing we may have something like:
+To do this gabbi uses yaml to declare the test API calls and the expected response. For example, lets take a look at a
+simple web service which has a database of `Thing`s. To test the creation of a thing we may have something like:
 
 ```yaml
 tests:
@@ -100,7 +102,7 @@ tests:
 
 Here we are creating a `Thing`, making sure the request is a `POST`, the response code is 201 and that the correct 
 content type is being sent. We also make sure that if we make a `GET` (default) request for the `Thing` created in the 
-previous request by using `$RESPONSE`, we get a 200 status code (default) with json data taht has the correct `name`.
+previous request by using `$RESPONSE`, we get a 200 status code (default) with json data that has the correct `name`.
 These tests are very easy to read and can be very exhaustive.
 
 Full gabbi documentation can be found [here](https://gabbi.readthedocs.org/en/latest/index.html).
@@ -108,18 +110,18 @@ Full gabbi documentation can be found [here](https://gabbi.readthedocs.org/en/la
 Combining The Two
 =================
 
-The rest of this post will explore how these two tools can be used to create readable, parameterised tests for http api
-methods. The example is for a django project using django rest framework for the web api and can be found at 
-[https://github.com/wildfish/gabbi-hypothesis-demo].
+The rest of this post will explore how these two tools can be used to create readable, parameterised tests for http API methods. The example is for a django project using django rest framework for the web API and can be found at 
+https://github.com/wildfish/gabbi-hypothesis-demo.
 
 If we want to parameterise our gabbi tests we can do by using environment variables using `$ENVIRON` this gives two
 issues:
+
 1. The actual tests cases (the yaml files) are separate from the code generating values.
 2. The code generating the test values will be largely replicated code (lots of setting environment variable).
 
 The first point is the major issue here. When your test code is split across multiple files it becomes difficult to 
 maintain and it may also not be obvious what values are suitable for your test cases reducing faith in the test suite.
-Here we hope to solve these by putting the gabi declaration directly in the test case.
+Here we hope to solve these by putting the gabbi declaration directly in the test case.
 
 Custom Test Case
 ----------------
@@ -242,8 +244,8 @@ FAIL: fetch thing
 	unable to replace $RESPONSE in /app/api/things/$RESPONSE["$.id"]/, data unavailable: JSONPath '$.id' failed to match on data: '{'name': ['This field may not be blank.']}'
 ```
 
-This gives us 2 pieces of information, firstly that it failed and secondly, that it failed because the api was passed
-an empty string. This has shown us that our assumptions about what data can be handled by out api were false. Now we 
+This gives us 2 pieces of information, firstly that it failed and secondly, that it failed because the API was passed
+an empty string. This has shown us that our assumptions about what data can be handled by out API were false. Now we 
 can add a new test case to cover the empty string example and refine our original test to ignore the value. It turns 
 out that django rest framework will strip input of white space on cleaning the data so we will modify our tests to 
 account for all 'empty' strings:  
@@ -303,8 +305,8 @@ class ThingApi(GabbiHypothesisTestCase):
 ```
 
 Here we introduce 2 new concepts from hypothesis, `filter` and `assume`. `filter` as you may expect, only gives values
-that match the filter function. `assume` fails the test in a way that hypothesis will learn and start favour giving
-examples that do not match the assumption. When we run these tests we get:
+that match the filter function. `assume` fails the test in a way that hypothesis will learn and start to favour giving
+examples that match the assumption. When we run these tests we get:
 
 ```
 $ python manage.py test
@@ -337,7 +339,7 @@ Ran 2 tests in 0.014s
 FAILED (failures=2)
 ```
 
-So another assumption about our api was not correct. Our api cannot handle arbitrarily long names. Again we add a test
+So another assumption about our API was not correct. Our API cannot handle arbitrarily long names. Again we add a test
 to cover this example and refine the original test:
 
 ```python
@@ -380,17 +382,20 @@ When we run this we now all tests pass.
 A Note On Versioning
 ====================
 
-Lets assume that this api was to be used by a wide audience and we wanted to change our model so that `name` was
+Lets assume that this API was to be used by a wide audience and we wanted to change our model so that `name` was
 actually stored as `first_name`, `middle_names` and `last_name`. We would be safe in making that change because our 
-tests never use the model directly, the only thing we state in our tests is that using this version of the api our
-consumers will be able to create an object by supplying the 'name' parameter and when retrieving the object the 'name'
+tests never use the model directly, the only thing we state in our tests is that using this version of the API our
+consumers will be able to create an object by supplying the `name` parameter and when retrieving the object the `name`
 parameter will be present with the correct value. If all tests pass we should be able to roll out our model change
-safe in the knowledge our users using the old api will not have their applications immediately break. 
+safe in the knowledge our users using the old API will not have their applications immediately break. 
 
 Conclusion
 ==========
 
-We have seen how to combine hypothesis and gabbi to create tests for our api that are both readable and have high 
+We have seen how to combine hypothesis and gabbi to create tests for our API that are both readable and have high 
 coverage by delegating the value selection. We have also seen how using these methods we can check and improve the 
-assumptions we have made about our api. We have also seen how property based tesing can be used to help keep test
-faith for older versions of you api.
+assumptions we have made about our API. finally, property based tesing can be used to help keep testfaith for older
+versions of you API.
+
+Using these tests along with test driven development can ensure we get teh API that we want to use and have great test
+coverage.
