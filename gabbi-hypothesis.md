@@ -397,5 +397,5 @@ coverage by delegating the value selection. We have also seen how using these me
 assumptions we have made about our API. finally, property based tesing can be used to help keep testfaith for older
 versions of you API.
 
-Using these tests along with test driven development can ensure we get teh API that we want to use and have great test
+Using these tests along with test driven development can ensure we get the API that we want to use and have great test
 coverage.
