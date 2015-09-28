@@ -19,7 +19,7 @@ Hypothesis uses, what it calls strategies to inject parameters into your test ca
 values from across the variable space including 'nasty' values such as min, max, nan and inf. In general this is done 
 using a single decorator `given`, for example:
 
-```
+```python
 from hypothesis import given
 from hypothesis.strategies import floats
 
@@ -35,7 +35,7 @@ In general we want to test properties of our methods using hypothesis to avoid r
 test itself, this will help keep tests clear and independent of the implementation. For example I would probably not 
 want to test:
  
-```
+```python
 @given(floats(), floats())
 def test_result_is_sum_of_first_and_second(first, second):
     assert add(first, second) == first + second
@@ -45,7 +45,7 @@ While it would be ok to write this test as it is sufficiently simple, for more c
 decoding data you would likely not want to test the encoded result, instead you would test that given a value, encoding 
 and decoding gives the original result:
    
-```
+```python
 @given(floats())
 def test_encoding_and_decoding_a_value_gives_the_original_value(value):
     encoded = encode(value)
@@ -81,7 +81,7 @@ Gabbi is a tool for declaratively creating tests for web apis. It hopes to solve
 To do this gabbi uses yaml to declare the test api calls and the expected response. For example, lets take a look at a 
 simple web service which has a database of `Thing`s, to test the creation of a thing we may have something like:
 
-```
+```yaml
 tests:
   - name: create thing
     url: /app/api/things/
@@ -126,7 +126,7 @@ Custom Test Case
 
 First thing we need to do is create a custom test case that will allow that will handle the hard work:
 
-```
+```python
 import unittest
 
 from django.test import LiveServerTestCase
@@ -181,7 +181,7 @@ Building Tests
 
 If we go back to the example from above with a web app that stores `Thing`s we would start by writing:
 
-```
+```python
 from hypothesis import given
 from hypothesis.strategies import text
 from .test_case import GabbiHypothesisTestCase
@@ -248,7 +248,7 @@ can add a new test case to cover the empty string example and refine our origina
 out that django rest framework will strip input of white space on cleaning the data so we will modify our tests to 
 account for all 'empty' strings:  
 
-```
+```python
 from hypothesis import given, assume
 from hypothesis.strategies import text
 from .test_case import GabbiHypothesisTestCase
@@ -340,7 +340,7 @@ FAILED (failures=2)
 So another assumption about our api was not correct. Our api cannot handle arbitrarily long names. Again we add a test
 to cover this example and refine the original test:
 
-```
+```python
 class ThingApi(GabbiHypothesisTestCase):
     @given(text())
     def test_object_is_created___object_has_correct_name_when_fetched(self, name):
