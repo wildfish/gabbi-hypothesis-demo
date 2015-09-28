@@ -17,9 +17,9 @@ this failing case in it's database to use until the problem is resolved.
 
 Hypothesis uses, what it calls strategies to inject parameters into your test cases. These strategies produce 200 
 different random examples values from across the variable space (including 'nasty' values such as min, max, nan and
-inf) and your test is ran for each example. In general this is done using a single decorator, `given`, on your test 
+inf) and your test is ran for each example. In general this is done using a single decorator, `@given`, on your test 
 case which passes the parameters into the test via the argument list. In the following example two float values are 
-passed to `test_float_addition_is_commutative.
+passed to `test_float_addition_is_commutative`.
 
 ```python
 from hypothesis import given
@@ -53,7 +53,7 @@ structures it is simple to chain strategies together to produce new strategies. 
 could be costructed with two keyword parameters `text_param` and `float_param` we could create a strategy for it by
 chaining dictionary, text and float strategies.
 
-```
+```python
 from hypothesis.strategies import floats, text, fixed_dictionaries, just
 
 
@@ -66,7 +66,7 @@ def my_objs():
     return fixed_dicts({
         'text_param': text(),
         'float_param': floats(),
-    }).flatmap(lambda x: just(MyObj(*x)))
+    }).flatmap(lambda x: just(MyObj(**x)))
 ```
 
 This will take an example from the `fixed_dictionary` strategy which has`text_param` and `float_param` fields and 
@@ -75,6 +75,9 @@ instance of `MyObj`. It is also possible to create entirely new strategies, a go
 the docs 
 [here](https://hypothesis.readthedocs.org/en/latest/data.html?highlight=flatmap#defining-entirely-new-strategies).
 There is also built in support for generating django models in the `hypothesis.extra.django` module.
+
+Constructing Hypothesis Tests
+-----------------------------
 
 In general we want to test properties of our methods using hypothesis to avoid replicating the implementation in the 
 test itself, this will help keep tests clear and independent of the implementation. For example we would probably not 
@@ -120,14 +123,10 @@ we are actually testing the API in a way it will be used by the consumers or whe
 world. Remember, we need to be nasty to our applications in order to test them correctly. Of cource we can enforce all
 of this in our testing framework but often this makes the test a lot harder to read.
 
-Gabbi is a tool for declaratively creating tests for web APIs. It hopes to solve 2 problems:
-
-1. Making API tests easier to read
-2. Making testing of http requests more explicit
-
-To do this gabbi uses yaml files to declare the test API calls and the expected response which can be ran using
-gabbi-run. For example, lets take a look at a simple web service which has a database of `Thing`s. To test the 
-creation of a thing we may have something like:
+Gabbi is a tool for declaratively creating tests for web APIs. It hopes to solve these problems. To do this gabbi uses
+yaml files to declare the test API calls and the expected response which can be ran using `gabbi-run`. For example,
+lets take a look at a simple web service which has a database of `Thing`s. To test the creation of a thing we may have
+something like:
 
 ```yaml
 tests:
@@ -165,8 +164,8 @@ https://github.com/wildfish/gabbi-hypothesis-demo.
 Custom Test Case
 ----------------
 
-First thing we need to do is create a custom test case that will allow that will handle the hard work by creating the
-Gabbi test cases from a python dictionary rather than yaml files:
+First thing we need to do is create a custom test case that will handle the hard work by creating the Gabbi test cases
+from a python dictionary rather than yaml files:
 
 ```python
 import unittest
@@ -423,7 +422,7 @@ Conclusion
 
 We have seen how to combine hypothesis and gabbi to create tests for our API that are both readable and have high 
 coverage by delegating the value selection. We have also seen how using these methods we can check and improve the 
-assumptions we have made about our API. finally, property based tesing can be used to help keep testfaith for older
+assumptions we have made about our API. Finally, property based tesing can be used to help keep test faith for older
 versions of you API.
 
 Using these tests along with test driven development can ensure we get the API that we want to use and have great test
