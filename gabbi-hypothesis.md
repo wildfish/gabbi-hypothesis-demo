@@ -1,7 +1,7 @@
 Using Gabbi and Hypothesis to Test APIs
 =======================================
 
-In he world of testing it is important to write tests that are both easy to read and covering a wide range of scenarios. 
+In the world of testing it is important to write tests that are both easy to read and covering a wide range of scenarios. 
 Often one of these will be sacrificed to facilitate the other, such as hard coding your examples so that your test 
 logic remains clear or by creating an overly complicated setup so that multiple scenarios can be explored. Here we 
 discuss two tools that when combined will allow you to explore more of the test surface of your web API while still 
@@ -11,13 +11,15 @@ Hypothesis
 ==========
 
 Hypothesis is a library that, when provided with a description of the parameters of your API will explore many 
-situation that will stress your system allowing you to explore your API more thoroughly. When you have errors,
+situations that will stress your system allowing you to explore your API more thoroughly. When you have errors,
 hypothesis will then work to simplify the failing example to show you the simplest failing case and then keep
 this failing case in it's database to use until the problem is resolved.
 
-Hypothesis uses, what it calls strategies to inject parameters into your test cases. These strategies produce random 
-values from across the variable space including 'nasty' values such as min, max, nan and inf. In general this is done 
-using a single decorator `given`, for example:
+Hypothesis uses, what it calls strategies to inject parameters into your test cases. These strategies produce 200 
+different random examples values from across the variable space (including 'nasty' values such as min, max, nan and
+inf) and your test is ran for each example. In general this is done using a single decorator, `given`, on your test 
+case which passes the parameters into the test via the argument list. In the following example two float values are 
+passed to `test_float_addition_is_commutative.
 
 ```python
 from hypothesis import given
@@ -30,6 +32,49 @@ from my.module import add
 def test_float_addition_is_commutative(first, second):
     assert add(first, second) == add(second, first)
 ```
+
+These can be passed in as either positional or named parameters (though it is not advised to mix) so the previous test
+can be defined as:
+
+```python
+from hypothesis import given
+from hypothesis.strategies import floats
+
+from my.module import add
+
+
+@given(first=floats(), second=floats())
+def test_float_addition_is_commutative(first=None, second=None):
+    assert add(first, second) == add(second, first)
+```
+
+Hypothesis comes with strategies for all built in python types as well as mechanisms for creating complex data 
+structures it is simple to chain strategies together to produce new strategies. For example if we had an object that
+could be costructed with two keyword parameters `text_param` and `float_param` we could create a strategy for it by
+chaining dictionary, text and float strategies.
+
+```
+from hypothesis.strategies import floats, text, fixed_dictionaries, just
+
+
+class MyObj:
+    def __init__(text_param=None, float_param=None):
+        ...
+
+
+def my_objs():
+    return fixed_dicts({
+        'text_param': text(),
+        'float_param': floats(),
+    }).flatmap(lambda x: just(MyObj(*x)))
+```
+
+This will take an example from the `fixed_dictionary` strategy which has`text_param` and `float_param` fields and 
+passes it into the `flatmap` function, this will then be used to generate a new strategy that consists of our new
+instance of `MyObj`. It is also possible to create entirely new strategies, a good description of this can be found in
+the docs 
+[here](https://hypothesis.readthedocs.org/en/latest/data.html?highlight=flatmap#defining-entirely-new-strategies).
+There is also built in support for generating django models in the `hypothesis.extra.django` module.
 
 In general we want to test properties of our methods using hypothesis to avoid replicating the implementation in the 
 test itself, this will help keep tests clear and independent of the implementation. For example we would probably not 
@@ -77,11 +122,12 @@ of this in our testing framework but often this makes the test a lot harder to r
 
 Gabbi is a tool for declaratively creating tests for web APIs. It hopes to solve 2 problems:
 
-1. Making aPI tests easier to read
+1. Making API tests easier to read
 2. Making testing of http requests more explicit
 
-To do this gabbi uses yaml to declare the test API calls and the expected response. For example, lets take a look at a
-simple web service which has a database of `Thing`s. To test the creation of a thing we may have something like:
+To do this gabbi uses yaml files to declare the test API calls and the expected response which can be ran using
+gabbi-run. For example, lets take a look at a simple web service which has a database of `Thing`s. To test the 
+creation of a thing we may have something like:
 
 ```yaml
 tests:
@@ -101,32 +147,26 @@ tests:
 ```
 
 Here we are creating a `Thing`, making sure the request is a `POST`, the response code is 201 and that the correct 
-content type is being sent. We also make sure that if we make a `GET` (default) request for the `Thing` created in the 
-previous request by using `$RESPONSE`, we get a 200 status code (default) with json data that has the correct `name`.
-These tests are very easy to read and can be very exhaustive.
+content type is being sent. We also make sure that if we make a `GET` (default) request for the `Thing` created in the
+previous request by using `$RESPONSE`, we get a 200 status code (default) with json data that has the correct `name`. 
+In this example `$.name` is used to reference the `name` property from the responses json data. This is json path 
+lookup notation, for more information take a look at the (jsonpath_re)[http://jsonpath-rw.readthedocs.org/en/latest/] 
+docs pages.
 
 Full gabbi documentation can be found [here](https://gabbi.readthedocs.org/en/latest/index.html).
 
 Combining The Two
 =================
 
-The rest of this post will explore how these two tools can be used to create readable, parameterised tests for http API methods. The example is for a django project using django rest framework for the web API and can be found at 
+The rest of this post will explore how these two tools can be used to create readable, parameterised tests for http 
+API methods. The example is for a django project using django rest framework for the web API and can be found at 
 https://github.com/wildfish/gabbi-hypothesis-demo.
-
-If we want to parameterise our gabbi tests we can do by using environment variables using `$ENVIRON` this gives two
-issues:
-
-1. The actual tests cases (the yaml files) are separate from the code generating values.
-2. The code generating the test values will be largely replicated code (lots of setting environment variable).
-
-The first point is the major issue here. When your test code is split across multiple files it becomes difficult to 
-maintain and it may also not be obvious what values are suitable for your test cases reducing faith in the test suite.
-Here we hope to solve these by putting the gabbi declaration directly in the test case.
 
 Custom Test Case
 ----------------
 
-First thing we need to do is create a custom test case that will allow that will handle the hard work:
+First thing we need to do is create a custom test case that will allow that will handle the hard work by creating the
+Gabbi test cases from a python dictionary rather than yaml files:
 
 ```python
 import unittest
@@ -233,7 +273,10 @@ This gives us 2 pieces of information, firstly that it failed and secondly, that
 an empty string. This has shown us that our assumptions about what data can be handled by out API were false. Now we 
 can add a new test case to cover the empty string example and refine our original test to ignore the value. It turns 
 out that django rest framework will strip input of white space on cleaning the data so we will modify our tests to 
-account for all 'empty' strings:  
+account for all 'empty' strings. To do this we will introduce `filter` and `assume`. `filter` as you may expect, only
+gives values that match the filter function. `assume` fails the test in a way that Hypothesis will catch and then
+learn to favour giving examples that match the assumption. This failure is not recorded as a failure and does not 
+take up one of the test examples:  
 
 ```python
 from hypothesis import given, assume
@@ -289,9 +332,7 @@ class ThingApi(GabbiHypothesisTestCase):
         })
 ```
 
-Here we introduce 2 new concepts from hypothesis, `filter` and `assume`. `filter` as you may expect, only gives values
-that match the filter function. `assume` fails the test in a way that hypothesis will learn and start to favour giving
-examples that match the assumption. When we run these tests we get:
+When we run these tests we get:
 
 ```
 $ python manage.py test
