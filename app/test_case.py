@@ -1,8 +1,8 @@
 import unittest
 
 from django.test import LiveServerTestCase
+from gabbi import case
 from gabbi.driver import test_suite_from_yaml, RESPONSE_HANDLERS
-from gabbi.case import HTTPTestCase
 from gabbi.reporter import ConciseTestRunner
 from hypothesis.extra.django import TestCase
 from six import StringIO
@@ -15,7 +15,7 @@ class GabbiHypothesisTestCase(TestCase, LiveServerTestCase):
     def run_gabi(self, gabbi_declaration):
         # initialise the gabbi handlers
         for handler in RESPONSE_HANDLERS:
-            handler(HTTPTestCase)
+            handler(case.HTTPTestCase)
 
         # take only the host name and port from the live server
         _, host = self.live_server_url.split('://')

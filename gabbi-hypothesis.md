@@ -132,8 +132,8 @@ First thing we need to do is create a custom test case that will allow that will
 import unittest
 
 from django.test import LiveServerTestCase
+from gabbi import case
 from gabbi.driver import test_suite_from_yaml, RESPONSE_HANDLERS
-from gabbi.case import HTTPTestCase
 from gabbi.reporter import ConciseTestRunner
 from hypothesis.extra.django import TestCase
 from six import StringIO
@@ -146,7 +146,7 @@ class GabbiHypothesisTestCase(TestCase, LiveServerTestCase):
     def run_gabi(self, gabbi_declaration):
         # initialise the gabbi handlers
         for handler in RESPONSE_HANDLERS:
-            handler(HTTPTestCase)
+            handler(case.HTTPTestCase)
 
         # take only the host name and port from the live server
         _, host = self.live_server_url.split('://')
@@ -317,26 +317,33 @@ F.
 FAIL: test_object_is_created___object_has_correct_name_when_fetched (app.tests.ThingApi)
 ----------------------------------------------------------------------
 Traceback (most recent call last):
-  File "/home/dan/workspace/wildfish/gabbihypothesisdemo/.hypothesis/eval_source/hypothesis_temporary_module_9669614f5505be38bfcae5a44a1d6cfa08e2c416.py", line 5, in test_object_is_created___object_has_correct_name_when_fetched
+  File "/home/dan/workspace/wildfish/gabbi-hypothesis-demo/.hypothesis/eval_source/hypothesis_temporary_module_9669614f5505be38bfcae5a44a1d6cfa08e2c416.py", line 5, in test_object_is_created___object_has_correct_name_when_fetched
     return f(self, name)
-  File "/home/dan/workspace/wildfish/pyenvs/gabbihypothesisdemo/lib/python3.4/site-packages/hypothesis/core.py", line 575, in wrapped_test
+  File "/home/dan/workspace/wildfish/pyenvs/gabbi-hypothesis/lib/python3.4/site-packages/hypothesis/core.py", line 577, in wrapped_test
     print_example=True
-  File "/home/dan/workspace/wildfish/pyenvs/gabbihypothesisdemo/lib/python3.4/site-packages/hypothesis/executors/executors.py", line 36, in execute
+  File "/home/dan/workspace/wildfish/pyenvs/gabbi-hypothesis/lib/python3.4/site-packages/hypothesis/executors/executors.py", line 36, in execute
     return function()
-  File "/home/dan/workspace/wildfish/pyenvs/gabbihypothesisdemo/lib/python3.4/site-packages/hypothesis/core.py", line 367, in run
+  File "/home/dan/workspace/wildfish/pyenvs/gabbi-hypothesis/lib/python3.4/site-packages/hypothesis/core.py", line 369, in run
     return test(*args, **kwargs)
-  File "/home/dan/workspace/wildfish/gabbihypothesisdemo/app/tests.py", line 28, in test_object_is_created___object_has_correct_name_when_fetched
+  File "/home/dan/workspace/wildfish/gabbi-hypothesis-demo/app/tests.py", line 29, in test_object_is_created___object_has_correct_name_when_fetched
     '$.name': name.strip()
-  File "/home/dan/workspace/wildfish/gabbihypothesisdemo/app/test_case.py", line 42, in run_gabi
+  File "/home/dan/workspace/wildfish/gabbi-hypothesis-demo/app/test_case.py", line 42, in run_gabi
     self.fail(s.getvalue())
 AssertionError: FAIL: create thing
 	'400' not found in ['201'], response:\r{\r  "name": [\r    "Ensure this field has no more than 255 characters."\r  ]\r}
 FAIL: fetch thing
 	unable to replace $RESPONSE in /app/api/things/$RESPONSE["$.id"]/, data unavailable: JSONPath '$.id' failed to match on data: '{'name': ['Ensure this field has no more than 255 characters.']}'
 ----------------------------------------------------------------------
-Ran 2 tests in 0.014s
+Ran 2 tests in 0.016s
 
 FAILED (failures=2)
+
+
+----------------------------------------------------------------------
+Ran 2 tests in 7.159s
+
+FAILED (failures=1)
+Destroying test database for alias 'default'...
 ```
 
 So another assumption about our API was not correct. Our API cannot handle arbitrarily long names. Again we add a test
@@ -378,6 +385,17 @@ class ThingApi(GabbiHypothesisTestCase):
 ```
 
 When we run this we now all tests pass.
+
+```
+$ python manage.py test
+Creating test database for alias 'default'...
+...
+----------------------------------------------------------------------
+Ran 3 tests in 10.809s
+
+OK
+Destroying test database for alias 'default'...
+```
 
 A Note On Versioning
 ====================
