@@ -4,7 +4,7 @@ Using Gabbi and Hypothesis to Test APIs
 In the world of testing it is important to write tests that are both easy to read and covering a wide range of scenarios. 
 Often one of these will be sacrificed to facilitate the other, such as hard coding your examples so that your test 
 logic remains clear or by creating an overly complicated setup so that multiple scenarios can be explored. Here we 
-discuss two tools that when combined will allow you to explore more of the test surface of your web API while still 
+discuss two tools thatm, when combined, will allow you to explore more of the test surface of your web API while still 
 creating clear and maintainable tests.
 
 Hypothesis
@@ -17,7 +17,7 @@ this failing case in it's database to use until the problem is resolved.
 
 Hypothesis uses, what it calls strategies to inject parameters into your test cases. These strategies produce 200 
 different random examples values from across the variable space (including 'nasty' values such as min, max, nan and
-inf) and your test is ran for each example. In general this is done using a single decorator, `@given`, on your test 
+inf) and your test is run for each example. In general this is done using a single decorator, `@given`, on your test 
 case which passes the parameters into the test via the argument list. In the following example two float values are 
 passed to `test_float_addition_is_commutative`.
 
@@ -49,7 +49,7 @@ def test_float_addition_is_commutative(first=None, second=None):
 ```
 
 Hypothesis comes with strategies for all built in python types as well as mechanisms for creating complex data 
-structures it is simple to chain strategies together to produce new strategies. For example if we had an object that
+structures. It is simple to chain strategies together to produce new strategies. For example, if we had an object that
 could be costructed with two keyword parameters `text_param` and `float_param` we could create a strategy for it by
 chaining dictionary, text and float strategies.
 
@@ -70,8 +70,8 @@ def my_objs():
 ```
 
 This will take an example from the `fixed_dictionary` strategy which has`text_param` and `float_param` fields and 
-passes it into the `flatmap` function, this will then be used to generate a new strategy that consists of our new
-instance of `MyObj`. It is also possible to create entirely new strategies, a good description of this can be found in
+pass it into the `flatmap` function. This will then be used to generate a new strategy that consists of our new
+instance of `MyObj`. It is also possible to create entirely new strategies - a good description of this can be found in
 the docs 
 [here](https://hypothesis.readthedocs.org/en/latest/data.html?highlight=flatmap#defining-entirely-new-strategies).
 There is also built in support for generating django models in the `hypothesis.extra.django` module.
@@ -113,7 +113,7 @@ Gabbi
 =====
 
 Often when testing APIs we fall into the trap of testing that in a given situation the API call will be successful or 
-error and let the test framework hide all the nasty details from us. While this is usually ok for your the javascript 
+error and let the test framework hide all the nasty details from us. While this is usually ok for your javascript 
 application, where we will either display the data on success or give some kind of error on failure, in the more 
 general case http offers a lot of information to your API consumer, which we should make sure is present and correct 
 if we want our APIs to be used by a wider audience.
@@ -124,7 +124,7 @@ world. Remember, we need to be nasty to our applications in order to test them c
 of this in our testing framework but often this makes the test a lot harder to read.
 
 Gabbi is a tool for declaratively creating tests for web APIs. It hopes to solve these problems. To do this Gabbi uses
-yaml files to declare the test API calls and the expected response which can be ran using `gabbi-run`. For example,
+yaml files to declare the test API calls and the expected response which can be run using `gabbi-run`. For example,
 lets take a look at a simple web service which has a database of `Thing`s. To test the creation of a thing we may have
 something like:
 
@@ -269,7 +269,7 @@ FAIL: fetch thing
 ```
 
 This gives us 2 pieces of information, firstly that it failed and secondly, that it failed because the API was passed
-an empty string. This has shown us that our assumptions about what data can be handled by out API were false. Now we 
+an empty string. This has shown us that our assumptions about what data can be handled by our API were false. Now we 
 can add a new test case to cover the empty string example and refine our original test to ignore the value. It turns 
 out that django rest framework will strip input of white space on cleaning the data so we will modify our tests to 
 account for all 'empty' strings. To do this we will introduce `filter` and `assume`. `filter` as you may expect, only
@@ -410,7 +410,7 @@ Destroying test database for alias 'default'...
 A Note On Versioning
 ====================
 
-Lets assume that this API was to be used by a wide audience and we wanted to change our model so that `name` was
+Let's assume that this API was to be used by a wide audience and we wanted to change our model so that `name` was
 actually stored as `first_name`, `middle_names` and `last_name`. We would be safe in making that change because our 
 tests never use the model directly, the only thing we state in our tests is that using this version of the API our
 consumers will be able to create an object by supplying the `name` parameter and when retrieving the object the `name`
