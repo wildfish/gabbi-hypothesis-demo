@@ -4,7 +4,7 @@ Using Gabbi and Hypothesis to Test APIs
 In the world of testing it is important to write tests that are both easy to read and covering a wide range of scenarios. 
 Often one of these will be sacrificed to facilitate the other, such as hard coding your examples so that your test 
 logic remains clear or by creating an overly complicated setup so that multiple scenarios can be explored. Here we 
-discuss two tools thatm, when combined, will allow you to explore more of the test surface of your web API while still 
+discuss two tools that, when combined, will allow you to explore more of the test surface of your web API while still 
 creating clear and maintainable tests.
 
 Hypothesis
