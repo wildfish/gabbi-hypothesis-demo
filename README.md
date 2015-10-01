@@ -4,6 +4,8 @@ gabbi-hypothesis-demo
 A small application to demonstrate how [hypothesis](https://hypothesis.readthedocs.org/en/latest/) can be used with 
 [gabbi](https://gabbi.readthedocs.org/en/latest/index.html) to test REST apis.
 
+See accompanying blog post at http://wildfish.com/blog/2015/10/01/using-gabbi-and-hypothesis-test-django-apis/.
+
 We use [django](https://www.djangoproject.com/) and [django rest framework](http://www.django-rest-framework.org/) to 
 create the service to test.
 
