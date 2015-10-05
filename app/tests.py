@@ -1,3 +1,4 @@
+import string
 from hypothesis import given, assume
 from hypothesis.strategies import text
 from .test_case import GabbiHypothesisTestCase
@@ -30,7 +31,7 @@ class ThingApi(GabbiHypothesisTestCase):
             }],
         })
 
-    @given(text().filter(lambda x: not x.strip()))
+    @given(text(alphabet=string.whitespace))
     def test_object_name_is_blank___bad_request_status_is_given(self, name):
         self.run_gabi({
             'tests': [{
